@@ -118,8 +118,16 @@ st.caption("Fill in the 'reasonable' and 'note' values after reading each commen
 # and update "reasonable" and "note" with your own judgement.
 audit_ids = ["R02", "R12", "R01", "R14", "R04", "R13"]
 audit = df[df["id"].isin(audit_ids)][["id", "text", "sentiment", "compound"]].copy()
-audit["reasonable"] = "yes/no (edit me)"
-audit["note"] = "Write your note here"
+audit_review = {
+    "R01": ("No", "Clearly positive (keeps water cold all day), but it has no strong sentiment words, so VADER scored it 0 and called it Neutral."),
+    "R02": ("Yes", "Words like 'great' and 'easy' make this clearly positive."),
+    "R04": ("Yes", "'Leaks' and 'very disappointing' are clearly negative."),
+    "R12": ("Yes", "'Excellent' and daily use make this clearly positive."),
+    "R13": ("Yes", "'Broke' and 'poor quality' are clearly negative."),
+    "R14": ("Yes (borderline)", "A factual statement, so Neutral is reasonable, though 'works as described' is mildly positive."),
+}
+audit["reasonable"] = audit["id"].map(lambda i: audit_review[i][0])
+audit["note"] = audit["id"].map(lambda i: audit_review[i][1])
 st.dataframe(audit, use_container_width=True, hide_index=True)
 
 st.subheader("Negation test")
